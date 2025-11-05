@@ -599,20 +599,43 @@ const competitorPagination = ref({
 
 // 方法
 const formatDate = (dateString) => {
-  // 将UTC时间字符串转换为本地时间
-  const date = new Date(dateString + 'Z') // 添加Z表示UTC时间
+  if (!dateString) return '-';
   
-  // 使用本地时区显示时间
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // 使用本地时区
-  })
+  try {
+    // 处理不同类型的日期格式
+    let date;
+    if (typeof dateString === 'string') {
+      // 如果是ISO格式字符串（如2025-11-05T12:41:53.452Z），直接解析
+      if (dateString.includes('T')) {
+        date = new Date(dateString);
+      } else {
+        // 如果是数据库的created_at格式（如2025-11-05 16:42:01），添加Z表示UTC
+        date = new Date(dateString + 'Z');
+      }
+    } else {
+      date = new Date(dateString);
+    }
+    
+    // 检查日期是否有效
+    if (isNaN(date.getTime())) {
+      return '无效日期';
+    }
+    
+    // 使用本地时区显示时间
+    return date.toLocaleString('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // 使用本地时区
+    });
+  } catch (error) {
+    console.error('日期格式化错误:', error, dateString);
+    return '日期错误';
+  }
 }
 
 const fetchProduct = async () => {
