@@ -599,7 +599,20 @@ const competitorPagination = ref({
 
 // 方法
 const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('zh-CN')
+  // 将UTC时间字符串转换为本地时间
+  const date = new Date(dateString + 'Z') // 添加Z表示UTC时间
+  
+  // 使用本地时区显示时间
+  return date.toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // 使用本地时区
+  })
 }
 
 const fetchProduct = async () => {

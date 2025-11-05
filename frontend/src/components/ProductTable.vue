@@ -91,7 +91,22 @@ const createColumns = () => [
     title: '创建时间',
     key: 'created_at',
     width: 160,
-    render: (row) => new Date(row.created_at).toLocaleString('zh-CN'),
+    render: (row) => {
+      // 将UTC时间字符串转换为本地时间
+      const date = new Date(row.created_at + 'Z') // 添加Z表示UTC时间
+      
+      // 使用本地时区显示时间
+      return date.toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // 使用本地时区
+      })
+    },
     sorter: 'default'
   },
   {
